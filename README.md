@@ -12,9 +12,7 @@ This repository collects **research explorations**, **round-by-round trader expe
 | `runs/` | Backtest outputs (`metrics.json`, `submission.log`, …) |
 | `backtester/` | Rust crate, `Makefile`, macOS-oriented `scripts/` (`cargo_local.sh`, `doctor_local.sh`), licenses |
 | `scripts/` | `verify.sh` (fmt + Rust tests + submit helpers); symlinks to `backtester/scripts/*.sh` for Optuna wrappers |
-| `tools/submit.py` | Playwright + **Arc** (CDP) — paste a trader into the portal |
-| `tools/submit_chrome.py` | Same flow for **Google Chrome** (CDP) |
-| `tools/submit_common.py` | Shared CDP / navigation logic for the two helpers |
+| `tools/` | Optional portal paste via Playwright + CDP (`submit.py` / `submit_chrome.py`, shared `submit_common.py`) |
 
 ## Verification
 
@@ -100,53 +98,81 @@ Files follow **`r{round}v{variant}{family}.py`**: the numeric **variant** increm
 | `pair` | Paired or relative-value logic between products |
 | `mark` | Extra “mark” or overlay logic on an existing HV / VEV stack |
 
-**Tutorial (`traders/tutorial/`)** — Same **`r{round}v{variant}{family}.py`** pattern with **round = 0**; **variant** counts upward within each **family** (same rule as rounds 1–5). **`r0v01emtomcore`** matches the spirit of `traders/latest_trader.py` (tiny one-sided smoke-test quotes). **`imcprac`** — `r0v01imcprac` … `r0v04imcprac`: EWMA / momentum / inventory-penalty progression (“IMC prosperity trader”). **`emerald`** — `r0v01emerald` … `r0v06emerald`: take-then-make and tomato-fair iterations; **`r0v06emerald`** documents post-CSV tweaks (no emerald take pass, mean-reversion on tomatoes). **`allin`** — `r0v01allin`, `r0v02allin`: take-then-make with class-level vs `PARAMS` layout (`r0v02allin` fixes tomato fair vs a wrong hardcoded constant). **`emtomparam`** (`r0v01emtomparam`): one `PARAMS` map per product for tuning. **`emtomrw`**, **`emtomimitate`**, **`emtomanchor`**, **`emtomlinreg`** — `r0v01emtomrw` (random-walk tomato MM), `r0v01emtomimitate` (match observed backtest shapes), `r0v01emtomanchor` (known-fair anchor MM), `r0v01emtomlinreg` (rolling linear regression on tomato mids). Notebook: **`research/r0_notebook_prosper0.ipynb`**.
+### Tutorial (`traders/tutorial/`)
 
-**Round 1 — Osmium + Intarian pepper** — Two parallel books: **ASH_COATED_OSMIUM** (`osmium*`) and **INTARIAN_PEPPER_ROOT** (`peposm*`). Explored **EMA / blend fair** with history windows, **passive ladder** sizes and offsets, **take** vs **penny** edges, **inventory skew**, and **volatility**-gated tight quotes (`*inv`, `*flow`, `*ema`). **`opt`** files wrap base traders and sweep Optuna over those knobs. **`pair`** files test relative-value style legs between instruments.
+Tutorial traders stress-test **take-then-make**, **fair-value models**, and **inventory** on the small tomato + emerald book before the competition rounds scale up.
 
-**Round 2 — Same two books, round-2 tape** — Continues **osmium** and **peposm** families with more **`inv`**, **`pair`**, and **`ema`** variants; **`opt`** shells tune **round-2** inventory strategies (TPESampler, SQLite DB paths under `traders/`).
+- Uses the same **`r{round}v{variant}{family}.py`** pattern with **round = 0**; the numeric **variant** increments **within** each **family** (same rule as rounds 1–5; see the header comment in each file).
+- **`emtomcore`** — `r0v01emtomcore` matches the spirit of `traders/latest_trader.py`: tiny **one-sided** quotes for quick backtester / portal smoke tests.
+- **`imcprac`** — `r0v01imcprac` through `r0v04imcprac`: an EWMA / momentum / **inventory-penalty** progression in the “IMC prosperity trader” style (later variants add hybrid MM + alpha, stronger penalties, and product-specific quote logic).
+- **`emerald`** — `r0v01emerald` through `r0v06emerald`: **take-then-make** and **tomato-fair** iterations (EMA, momentum, spread placement, position limits). **`r0v06emerald`** documents post-CSV findings (e.g. passive-only emeralds when the tape shows no profitable takes, **mean-reversion** on tomatoes, top-of-book quoting).
+- **`allin`** — `r0v01allin` and `r0v02allin`: take-then-make with **class-level** constants vs a per-product **`PARAMS`** table; **`r0v02allin`** fixes tomato fair value (EMA) vs a wrong hardcoded placeholder.
+- **`emtomparam`** (`r0v01emtomparam`) — two-pass take-then-make driven by one **`PARAMS` map per product** (momentum tilt on tomato EMA fair) for grid search / tuning.
+- **`emtomrw`** (`r0v01emtomrw`) — treats **TOMATOES** as a random walk: earn the spread, strong inventory skew, no crossing; **EMERALDS** still take misprices vs the pegged fair.
+- **`emtomimitate`** (`r0v01emtomimitate`) — shapes behavior toward **observed backtest** patterns (aggressive emerald takes + top-of-book tomato MM, sparse takes vs EMA).
+- **`emtomanchor`** (`r0v01emtomanchor`) — take-then-make **anchored to known fair values** from the spec (same logical template for every listed product).
+- **`emtomlinreg`** (`r0v01emtomlinreg`) — **rolling linear regression** on tomato mids for a dynamic fair; **EMERALDS** use the fixed fair from the spec.
+- Exploratory notebook: **`research/r0_notebook_prosper0.ipynb`**.
 
-**Round 3 — Hydrogel, velvet, VEV ladder, cross-asset** — Main product groups:
+### Round 1 — Osmium + Intarian pepper
 
-- **Hydrogel (`HYDROGEL_PACK`)** — `hydrocore` mean-reversion-style fair and edge; `hydroema` adds smoothing; `hydroopt` / `hydroflow` add search shells or flow-style overlays.
-- **Velvet + vouchers (`VELVETFRUIT_EXTRACT`, `VEV_*`)** — `velvetcore` intrinsic / strike-based quoting; `velvetvol` and `velvetopt` push vol- and search-driven behavior; `velvetmark` where mark logic is isolated.
-- **Joint HV + ladder (`hvopt*`)** — Large family: **`hvoptcore`** combines OFI-skewed quoting on velvet with passive hydrogel; **`hvoptvol`** (many variants) adds **ladder-wide** position limits, **momentum** on hydrogel, and **vol- / smile-aware** voucher handling (including “robust” / profit-lock style notes in comments); **`hvoptinv`** stresses **inventory** across many `VEV_*` lines; **`hvoptpair`**, **`hvoptema`**, **`hvoptflow`** specialize pair, EMA, and flow layers.
-- **Cross-asset (`asset*`)** — Quote **all visible products**: `assetcore`-style breadth, plus **`assetema`**, **`assetinv`**, **`assetflow`**, and **`assetopt`** (Optuna over a deep `hvoptinv` / `hvoptvol` base).
+Round 1 is a **two-name** regime: one metal and one agricultural root, each with its own microstructure but shared tooling (fair, ladder, flow).
 
-**Round 4 — Richer HV / VEV + cross-asset** — Same instrument set as round 3, with more **mark-model** and **breadth** experiments: **`assetcore`** uses mid ± edge with **inventory penalty** and dislocation **takes**; **`hvoptmark`** / **`assetmark`** layer **mark-flow** ideas on hydrogel + velvet + vouchers; **`hvoptvol`** continues vol-aware MM; **`vevcore`** focuses **ATM vs wing** voucher routing; **`velvetmark`** tightens velvet-side overlays.
+- Two **parallel** books: **ASH_COATED_OSMIUM** (families tagged **`osmium*`**) and **INTARIAN_PEPPER_ROOT** (families tagged **`peposm*`**).
+- **Fair construction** — **EMA / blend** mids with tunable **history windows** so quotes track slower or faster tape without chasing every tick.
+- **Passive depth** — **ladder**-style sizes and price **offsets** away from touch to earn spread while controlling adverse selection.
+- **Execution style** — **take** (cross) vs **penny** (improve) at the edge; families vary how aggressively each name leans into one side.
+- **Risk and tilt** — **inventory skew** (`*inv`) pulls quotes when position builds; **volatility-gated** tightness avoids quoting too tight in noisy regimes; **order-flow / microprice** tilts (`*flow`) lean bids and asks with short-horizon pressure; **EMA-smoothed** layers (`*ema`) damp fair-value jitter before it hits the quote engine.
+- **Search** — **`opt`** files wrap base traders and run **Optuna** sweeps over spread, skew, window, and ladder knobs instead of hand-tuning every scalar.
+- **Relative value** — **`pair`** files express **spread / ratio** ideas between osmium and pepper (and related structures) so one leg can hedge or lean on the other.
+- **Naming** — Within each book, **`core`** is the baseline MM stack; suffixes in the table above (`inv`, `vol`, `flow`, `ema`, `opt`, `pair`) flag which layer dominates that file.
 
-**Round 5 — Wide SKU universe** — Many named products (e.g. galaxy sounds, microchips, panels, robots, sleep pods). **`round5vol`** implements a long **realized-vol / microprice / markout-delay** stack with **hard caps**, per-order clips, and explicit **AVOID** sets for toxic names. **`round5ema`** adds an **EMA / trend** style layer on the same universe. **`round5pair`** runs **ratio-history** (cointegration / residual) trades between configured pairs. **`emtomcore`** carries a **broad LIMITS** table (legacy names + round-5 + vouchers) for scaffolding. **`assetvol`** ties **cross-asset** quoting to vol-style sizing.
+### Round 2 — Same two books, round-2 tape
+
+Round 2 reuses the **osmium / pepper** split on **new round-2 data**: same strategy families, different noise and regime, so **`inv`** and **`pair`** get more mileage.
+
+- Continues the **osmium** and **peposm** families on the **round-2** tape with more **`inv`**, **`pair`**, and **`ema`** variants.
+- **Inventory-first** — Many variants stress **position limits** and **skew** because round-2 fills can stack inventory faster than round-1 intuition suggests.
+- **`opt`** shells tune **round-2** inventory-focused strategies (**TPESampler**, SQLite study DB paths under `traders/`, subprocess backtests to `rust_backtester`).
+- **Workflow** — Studies typically **spawn** `rust_backtester` per trial so each Optuna draw gets a full deterministic replay on the official tape.
+
+### Round 3 — Hydrogel, velvet, VEV ladder, cross-asset
+
+Round 3 adds **hydrogel**, **velvet**, and a full **voucher ladder** (`VEV_*`), so strategies must **route risk** across spot-like names, an extract, and many strikes at once.
+
+- **Hydrogel (`HYDROGEL_PACK`)** — **`hydrocore`**: mean-reversion-style fair and edge (lean back toward a central fair when the book dislocates); **`hydroema`**: smoothing on that stack so hydrogel quotes do not flicker with every mid update; **`hydroopt`** / **`hydroflow`**: Optuna or flow-style overlays on top of the hydro logic for sizing and tilt.
+- **Velvet + vouchers (`VELVETFRUIT_EXTRACT`, `VEV_*`)** — **`velvetcore`**: **intrinsic** / **strike-based** quoting so extract and each voucher line has a coherent notion of cheap vs rich; **`velvetvol`** and **`velvetopt`**: volatility- and search-driven behavior when smile or wing risk matters; **`velvetmark`**: **mark** logic isolated in its own family so mark experiments do not entangle the core velvet fair.
+- **Joint HV + ladder (`hvopt*`)** — Large family tying **hydrogel + velvet + vouchers** into one codebase path: **`hvoptcore`** combines **OFI-skewed** quoting on velvet with **passive hydrogel** so flow and mean-reversion roles stay separated by product; **`hvoptvol`** (many variants) adds **ladder-wide** position limits, **momentum** on hydrogel, and **vol- / smile-aware** voucher handling (including “robust” / profit-lock style notes in comments); **`hvoptinv`** stresses **inventory** across many **`VEV_*`** lines so no single strike silently dominates the book; **`hvoptpair`**, **`hvoptema`**, **`hvoptflow`** specialize **pair**, **EMA**, and **flow** layers without rewriting the whole HV stack each time.
+- **Cross-asset (`asset*`)** — Quote **all visible products** from one trader: **`assetcore`-style** breadth (shared framework per name), plus **`assetema`**, **`assetinv`**, **`assetflow`**, and **`assetopt`** (Optuna over a deep **`hvoptinv`** / **`hvoptvol`** base) for universe-wide sweeps.
+- **Research** — Correlation and option-structure notes for this round often live under `research/` (e.g. scripts comparing round-2 vs round-3 behavior) alongside the `hvopt*` traders.
+
+### Round 4 — Richer HV / VEV + cross-asset
+
+Round 4 keeps the **round-3 instrument set** but pushes **mark models**, **cross-strike** behavior, and **full-ladder** quoting further—especially where vouchers and velvet interact.
+
+- **Same instrument set as round 3**, with more **mark-model** work and **breadth** experiments across hydrogel, velvet, and the full voucher ladder.
+- **`assetcore`** — **Mid ± edge** quoting with an explicit **inventory penalty** so position naturally mean-reverts; **dislocation takes** fire when the visible book is far from fair and passive quotes would leave money on the table.
+- **`hvoptmark`** / **`assetmark`** — Layer **mark-flow** ideas on hydrogel + velvet + vouchers: mark-driven overlays sit on top of the HV stack to react when internal marks disagree with touch.
+- **`hvoptvol`** — Continues **vol-aware** market making on the joint book (wing vs ATM risk, clip sizes, and vol-regime gating vary by variant).
+- **`vevcore`** — Focuses **ATM vs wing** voucher routing and **strike-specific** behavior so capital is not spread evenly across strikes that have different edge and toxicity.
+- **`velvetmark`** — Tightens **velvet-side** mark overlays relative to the core velvet families—useful when extract fair is the bottleneck for the whole ladder.
+- **Theme** — Round 4 files often read as “round 3 HV/VEV, plus more explicit **mark** and **routing** discipline.”
+
+### Round 5 — Wide SKU universe
+
+Round 5 explodes the **product count**: many unrelated SKUs, each with its own limits, liquidity, and failure mode—strategies emphasize **filters**, **caps**, and **which names to touch at all**.
+
+- Many **named products** (e.g. galaxy sounds, microchips, panels, robots, sleep pods) with round-5-specific limits and books.
+- **`round5vol`** — **Realized-vol**, **microprice**, and **markout-delay** style features drive sizing; **hard caps** and per-order **clips** prevent one toxic print from blowing the book; explicit **AVOID** sets skip names that backtests flag as fragile or one-sided.
+- **`round5ema`** — Adds an **EMA / trend** signal layer on top of the same broad universe so trending names get directional tilt without a separate trader per product.
+- **`round5pair`** — **Ratio-history** (cointegration / residual) trades between **configured pairs**: spreads mean-revert when the ratio leaves its band.
+- **`emtomcore`** — Carries a **broad `LIMITS`** table (**legacy** tutorial names + round-5 SKUs + vouchers) as **scaffolding** for wide-universe runs so one file can legally quote every listed line.
+- **`assetvol`** — Ties **cross-asset** quoting to **vol-style** sizing and risk knobs across many products at once—closer to a single risk budget across the whole SKU list than per-name hand tuning.
+- **Operational picture** — Successful round-5 stacks usually combine **who to trade** (filters / avoids), **how big** (vol- and clip-aware sizing), and **how directional** (EMA / pair overlays).
 
 ## Portal submit helpers
 
-Both scripts drive an **already-open** Chromium-based browser via the **Chrome DevTools Protocol** (Playwright `connect_over_cdp`). They print setup hints if the connection fails.
-
-**Arc** — start Arc from a shell so it listens for CDP (flags and binary path depend on OS and install location). Typical pattern:
-
-```bash
-<arc> --remote-debugging-port=9222
-python tools/submit.py traders/latest_trader.py
-python tools/submit.py traders/latest_trader.py --inspect
-```
-
-**Google Chrome / Chromium** — quit any normal Chrome window first, then start a **debug** instance the same way (command varies by OS and package name, e.g. `chrome`, `google-chrome`, `chromium`):
-
-```bash
-<chrome-or-chromium> --remote-debugging-port=9222
-python tools/submit_chrome.py traders/latest_trader.py
-python tools/submit_chrome.py traders/latest_trader.py --inspect
-```
-
-Replace `<arc>` / `<chrome-or-chromium>` with whatever runs that browser on the machine (full path if the executable is not on `PATH`).
-
-**CDP URL** — default is `http://localhost:9222`. Override if needed:
-
-```bash
-export SUBMIT_CDP_URL=http://127.0.0.1:9223
-python tools/submit_chrome.py traders/latest_trader.py
-```
-
-Inspect screenshots are written under `tools/inspect_captures/` (gitignored).
+Start a Chromium-based browser with `--remote-debugging-port=9222`, then run `python tools/submit.py <trader.py>` (Arc) or `python tools/submit_chrome.py <trader.py>`. Use `python tools/submit.py --help` for `--inspect` and `SUBMIT_CDP_URL` if the CDP port differs. Inspect captures go under `tools/inspect_captures/` (gitignored).
 
 ## Credits
 

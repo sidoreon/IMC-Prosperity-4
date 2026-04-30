@@ -1,0 +1,28 @@
+name: verify
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: System deps (PyO3)
+        run: sudo apt-get update && sudo apt-get install -y python3-dev
+
+      - name: Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run checks
+        run: ./scripts/verify.sh
+        env:
+          PYO3_PYTHON: python3
+          CARGO_TARGET_DIR: ${{ github.workspace }}/backtester/target-ci

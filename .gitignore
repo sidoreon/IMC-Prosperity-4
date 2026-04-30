@@ -1,0 +1,16 @@
+target/
+runs/*
+!runs/.gitkeep
+traders/**/runs_compare/
+__pycache__/
+.venv/
+build/
+dist/
+*.whl
+.maturin/
+.DS_Store
+tools/inspect_captures/
+submit_step*.png
+TUTORIAL_ROUND_*/
+[0-9]*/
+traders/p4*

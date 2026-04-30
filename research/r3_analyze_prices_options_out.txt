@@ -1,0 +1,151 @@
+FINAL DATA ANALYSIS - ROUND 3
+================================================================================
+
+======================================================================
+  DESCRIPTIVE STATISTICS: HYDROGEL_PACK
+======================================================================
+
+--- Mid-Price Statistics ---
+  Count:      30000
+  Mean:       9990.8069
+  Std Dev:    31.9352
+  Min:        9891.0000
+  Max:        10079.0000
+
+--- Spread Statistics ---
+  Mean spread:15.7208
+  Max spread: 17.0000
+
+--- Log Return Statistics ---
+  Mean return:0.00000003
+  Vol (std):  0.00021720
+  Annual Vol: 0.343426
+
+======================================================================
+  DESCRIPTIVE STATISTICS: VELVETFRUIT_EXTRACT
+======================================================================
+
+--- Mid-Price Statistics ---
+  Count:      30000
+  Mean:       5250.0981
+  Std Dev:    15.6304
+  Min:        5198.0000
+  Max:        5300.0000
+
+--- Spread Statistics ---
+  Mean spread:4.9881
+  Max spread: 6.0000
+
+--- Log Return Statistics ---
+  Mean return:0.00000029
+  Vol (std):  0.00021547
+  Annual Vol: 0.340689
+
+======================================================================
+  OPTIONS ANALYSIS (Velvetfruit Extract Vouchers)
+======================================================================
+
+--- VEV_4000 ---
+  Mean Price:    1249.0060
+  Mean Spread:   20.6440
+  Mean Impl Vol: 0.0688  (Approx 6.88%)
+  Mean Delta:    0.9992
+  Mean Gamma:    0.0000
+  Mean Theta:    -25.2170
+  Mean Vega:     1.9549
+
+--- VEV_4500 ---
+  Mean Price:    748.7073
+  Mean Spread:   15.8274
+  Mean Impl Vol: 0.1530  (Approx 15.30%)
+  Mean Delta:    0.9972
+  Mean Gamma:    0.0000
+  Mean Theta:    -45.8620
+  Mean Vega:     6.8606
+
+--- VEV_5000 ---
+  Mean Price:    253.4107
+  Mean Spread:   6.0196
+  Mean Impl Vol: 0.1922  (Approx 19.22%)
+  Mean Delta:    0.9335
+  Mean Gamma:    0.0007
+  Mean Theta:    -382.8857
+  Mean Vega:     113.7970
+
+--- VEV_5100 ---
+  Mean Price:    165.9134
+  Mean Spread:   4.2677
+  Mean Impl Vol: 0.1923  (Approx 19.23%)
+  Mean Delta:    0.8133
+  Mean Gamma:    0.0016
+  Mean Theta:    -790.2223
+  Mean Vega:     238.2841
+
+--- VEV_5200 ---
+  Mean Price:    95.9549
+  Mean Spread:   2.8443
+  Mean Impl Vol: 0.1929  (Approx 19.29%)
+  Mean Delta:    0.6206
+  Mean Gamma:    0.0022
+  Mean Theta:    -1135.2976
+  Mean Vega:     336.9385
+
+--- VEV_5300 ---
+  Mean Price:    46.4471
+  Mean Spread:   2.1058
+  Mean Impl Vol: 0.1953  (Approx 19.53%)
+  Mean Delta:    0.3913
+  Mean Gamma:    0.0022
+  Mean Theta:    -1179.7016
+  Mean Vega:     335.5637
+
+--- VEV_5400 ---
+  Mean Price:    15.6502
+  Mean Spread:   1.4350
+  Mean Impl Vol: 0.1827  (Approx 18.27%)
+  Mean Delta:    0.1820
+  Mean Gamma:    0.0017
+  Mean Theta:    -764.2260
+  Mean Vega:     228.6322
+
+--- VEV_5500 ---
+  Mean Price:    6.7594
+  Mean Spread:   1.1604
+  Mean Impl Vol: 0.1986  (Approx 19.86%)
+  Mean Delta:    0.0846
+  Mean Gamma:    0.0009
+  Mean Theta:    -480.7189
+  Mean Vega:     136.0175
+
+--- VEV_6000 ---
+  Mean Price:    0.5000
+  Mean Spread:   1.0000
+  Mean Impl Vol: 0.3202  (Approx 32.02%)
+  Mean Delta:    0.0058
+  Mean Gamma:    0.0001
+  Mean Theta:    -85.2483
+  Mean Vega:     14.1269
+
+--- VEV_6500 ---
+  Mean Price:    0.5000
+  Mean Spread:   1.0000
+  Mean Impl Vol: 0.4836  (Approx 48.36%)
+  Mean Delta:    0.0040
+  Mean Gamma:    0.0000
+  Mean Theta:    -91.7606
+  Mean Vega:     10.1612
+
+
+--- Head of Sampled Greeks DataFrame ---
+     day  timestamp   product  underlying_price  mid_price        IV     Delta
+0      0          0  VEV_5400            5250.0       23.0  0.198527  0.219027
+100    0       1000  VEV_5100            5247.5      169.0  0.196755  0.796067
+200    0       2000  VEV_5200            5247.5      100.5  0.199447  0.607460
+300    0       3000  VEV_6000            5245.5        0.5  0.294169  0.005744
+400    0       4000  VEV_4500            5242.0      742.0  0.000001  1.000000
+500    0       5000  VEV_5100            5238.5      162.5  0.198927  0.779577
+600    0       6000  VEV_4500            5239.5      739.0       NaN       NaN
+700    0       7000  VEV_5200            5235.5       93.5  0.199832  0.582465
+800    0       8000  VEV_4000            5233.5     1233.0       NaN       NaN
+900    0       9000  VEV_5400            5232.0       19.5  0.199278  0.192486
+

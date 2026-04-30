@@ -1,0 +1,1 @@
+../backtester/scripts/doctor_local.sh

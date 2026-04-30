@@ -1,0 +1,41 @@
+INTERNAL ROUND 3 COMMODITY CORRELATIONS
+============================================================
+
+1. Price Level Correlation Matrix:
+product              HYDROGEL_PACK  VELVETFRUIT_EXTRACT
+product                                                
+HYDROGEL_PACK             1.000000             0.096727
+VELVETFRUIT_EXTRACT       0.096727             1.000000
+
+2. Log Return Correlation Matrix:
+product                  HYDROGEL_PACK_ret  VELVETFRUIT_EXTRACT_ret
+product                                                            
+HYDROGEL_PACK_ret                 1.000000                 0.005884
+VELVETFRUIT_EXTRACT_ret           0.005884                 1.000000
+
+3. Cross-Commodity Lead-Lag Indicators (Log Returns):
+
+--- HYDROGEL_PACK vs VELVETFRUIT_EXTRACT ---
+  Lag -10 (Col1 leads): 0.0018
+  Lag -9 (Col1 leads): -0.0008
+  Lag -8 (Col1 leads): 0.0120
+  Lag -7 (Col1 leads): -0.0022
+  Lag -6 (Col1 leads): -0.0006
+  Lag -5 (Col1 leads): 0.0084
+  Lag -4 (Col1 leads): 0.0038
+  Lag -3 (Col1 leads): 0.0109
+  Lag -2 (Col1 leads): -0.0066
+  Lag -1 (Col1 leads): 0.0010
+  Contemporaneous: 0.0059
+  Lag 1 (Col2 leads): 0.0029
+  Lag 2 (Col2 leads): 0.0010
+  Lag 3 (Col2 leads): -0.0038
+  Lag 4 (Col2 leads): -0.0070
+  Lag 5 (Col2 leads): -0.0011
+  Lag 6 (Col2 leads): -0.0011
+  Lag 7 (Col2 leads): 0.0039
+  Lag 8 (Col2 leads): 0.0013
+  Lag 9 (Col2 leads): 0.0062
+  Lag 10 (Col2 leads): -0.0050
+
+  Max Absolute Cross-Corr: 0.0120 at Lag -8 (Col1 leads)

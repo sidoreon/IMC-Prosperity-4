@@ -13,6 +13,7 @@ This repository collects **research explorations**, **round-by-round trader expe
 | `backtester/` | Rust crate, `Makefile`, macOS-oriented `scripts/` (`cargo_local.sh`, `doctor_local.sh`), licenses |
 | `scripts/` | `verify.sh` (fmt + Rust tests + submit helpers); symlinks to `backtester/scripts/*.sh` for Optuna wrappers |
 | `tools/` | Optional portal paste via Playwright + CDP (`submit.py` / `submit_chrome.py`, shared `submit_common.py`) |
+| `submissions/` | Submissions for the competition |
 
 ## Verification
 

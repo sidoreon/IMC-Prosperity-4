@@ -1,4 +1,4 @@
-# Prosperity 4 — research and submissions
+# IMC Prosperity 4 — research and submissions
 
 This repository collects **research explorations**, **round-by-round trader experiments**, and **local backtests** for IMC Prosperity 4. The Rust backtester engine lives under `backtester/` and is based on [prosperity_rust_backtester](https://github.com/GeyzsoN/prosperity_rust_backtester). Upstream **Apache-2.0** and **MIT** license texts are in that directory (`backtester/LICENSE-APACHE`, `backtester/LICENSE-MIT`).
 
